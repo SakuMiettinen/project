@@ -1,0 +1,40 @@
+:root {
+    --darkest: #0D1B2A;
+    --mid-dark: #1B263B;
+    --mid: #415A77;
+    --mid-light: #778DA9;
+    --lightest: #E0E1DD;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+nav {
+    background: var(--mid-dark);
+}
+
+a {
+    text-decoration: none;
+    color: var(--lightest);
+}
+
+.container {
+    display: flex;
+    justify-content: space-around;
+}
+
+.nav-left-container, .nav-right-container {
+    display: flex;
+    align-items: center;
+    height: 50px;
+}
+
+.nav-left-container {
+    gap: 5px;
+}
+
+.nav-right-container {
+    
+}

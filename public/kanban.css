@@ -1,0 +1,68 @@
+.kanban-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+.delete-column-button {
+    background: var(--mid-light);
+    cursor: pointer;
+    position: absolute;
+    font-size: x-large;
+    top: 5px;
+    right: 5px;
+    height: 30px;
+    width: 30px;
+    border-radius: 5px;
+    border: none;
+    background-size: contain;
+}
+
+.kanban-container > button {
+    width: fit-content;
+}
+
+.kanban-buttons {
+    padding: 20px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.kanban-columns {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.kanban-column {
+    max-width: 300px;
+    width: fit-content;
+    padding: 10px;
+    border-radius: 10px;
+    border: 2px solid var(--mid-dark);
+    position: relative;
+}
+
+.kanban-column > h3 {
+    text-align: center;
+}
+
+.card-container {
+    padding: 10px;
+    border-radius: 10px;
+    background: var(--mid-light);
+    overflow-wrap: break-word;
+}
+
+.card-container h4 {
+    margin: 0;
+    padding: 0 0 5px 0;
+    border-bottom: 1px solid white;
+}
+
+.card-container p {
+    margin: 5px 0 0 0;
+}

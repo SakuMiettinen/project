@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Jello Registration</title>
+        <link rel="stylesheet" href="index.css" />
+    </head>
+    <body>
+        <nav>
+            <div class="container">
+                <div class="nav-left-container">
+                    <a>Jello</a>
+                    <a href="/">Home</a>
+                    <a href="/kanban.html">Kanban board</a>
+                    <a href="/login.html">login</a>
+                    <a href="/register.html">register</a>
+                </div>
+                <div class="nav-right-container">
+                    <input type="text" class="" />
+                    <button>Search</button>
+                </div>
+            </div>
+        </nav>
+        <div class="container">
+            <h1 class="center-align">REGISTRATION</h1>
+            <form
+                action=""
+                id="registerForm"
+                enctype="multipart/form-data"
+                class="card-panel">
+                <div class="input-field">
+                    <label for="email">Email:</label>
+                    <input
+                        class="input-field"
+                        type="email"
+                        name="email"
+                        id="email"
+                        placeholder="Enter an email" />
+                </div>
+
+                <div class="input-field">
+                    <label for="password">Password:</label>
+                    <input
+                        class="input-field"
+                        type="text"
+                        name="password"
+                        id="password"
+                        placeholder="Enter a password"></input>
+                </div>
+                <button
+                    type="submit"
+                    id="submit"
+                    class="btn waver-effect waves-light">
+                    Register
+                </button>
+            </form>
+        </div>
+        <script src="./register.js"></script>
+    </body>
+</html>
