@@ -1,3 +1,8 @@
+const save = () => {
+    const saveEvent = new CustomEvent("saveChanges")
+    document.dispatchEvent(saveEvent)
+}
+
 const createColumn = (columnData, container, localColumnsDataArray) => {
     const kanbanColumn = document.createElement("div")
     kanbanColumn.classList.add("kanban-column")
@@ -12,6 +17,7 @@ const createColumn = (columnData, container, localColumnsDataArray) => {
         )
 
         localColumnsDataArray.splice(indexToRemove, 1)
+        save()
     })
 
     kanbanColumn.appendChild(deleteColumnBtn)
@@ -22,24 +28,282 @@ const createColumn = (columnData, container, localColumnsDataArray) => {
     columnTitle.textContent = columnData.title ? columnData.title : "New Column"
     kanbanColumn.appendChild(columnTitle)
 
+    const addCardbtn = document.createElement("button")
+    addCardbtn.textContent = "Add new card"
+
+    addCardbtn.addEventListener("click", () => {
+        const parentColumnId = localColumnsDataArray.findIndex(
+            column => column.id === columnData.id
+        )
+        let maxIdCard = localColumnsDataArray[parentColumnId].cards.reduce(
+            (max, current) => {
+                return current.id > max.id ? current : max
+            },
+            localColumnsDataArray[parentColumnId].cards[0]
+        )
+        const newCardObj = {
+            id: maxIdCard.id + 1,
+            title: "New Card",
+            details: "Card Details",
+        }
+        const cardContainer = createCard(
+            columnData.id,
+            newCardObj,
+            localColumnsDataArray
+        )
+        kanbanColumn.insertBefore(cardContainer, addCardbtn)
+
+        localColumnsDataArray[parentColumnId].cards.push(newCardObj)
+        save()
+    })
+
+    kanbanColumn.appendChild(addCardbtn)
+
     for (let card of columnData.cards) {
-        const cardContainer = document.createElement("div")
-        cardContainer.id = card.id
-        cardContainer.classList.add("card-container")
-        const cardTitle = document.createElement("h4")
-        cardTitle.textContent = card.title
-        makeTextEditable("cardTitle", cardTitle, localColumnsDataArray)
-
-        const cardDetails = document.createElement("p")
-        cardDetails.textContent = card.details
-        makeTextEditable("cardDetails", cardDetails, localColumnsDataArray)
-
-        cardContainer.appendChild(cardTitle)
-        cardContainer.appendChild(cardDetails)
-        kanbanColumn.appendChild(cardContainer)
+        const cardData = {
+            id: card.id,
+            title: card.title,
+            details: card.details,
+        }
+        const cardContainer = createCard(
+            columnData.id,
+            cardData,
+            localColumnsDataArray
+        )
+        kanbanColumn.insertBefore(cardContainer, addCardbtn)
     }
 
     container.appendChild(kanbanColumn)
+}
+
+const createCard = (parentId, cardData, localColumnsDataArray) => {
+    const cardContainer = document.createElement("div")
+    cardContainer.id = cardData.id
+    cardContainer.classList.add("card-container")
+    const cardTitle = document.createElement("h4")
+    cardTitle.textContent = cardData.title
+    makeTextEditable("cardTitle", cardTitle, localColumnsDataArray)
+
+    const cardDetails = document.createElement("p")
+    cardDetails.textContent = cardData.details
+    makeTextEditable("cardDetails", cardDetails, localColumnsDataArray)
+
+    cardContainer.appendChild(cardTitle)
+    cardContainer.appendChild(cardDetails)
+
+    const deleteCardBtn = document.createElement("button")
+    deleteCardBtn.textContent = "X"
+    deleteCardBtn.classList.add("delete-card-btn")
+
+    deleteCardBtn.addEventListener("click", () => {
+        cardContainer.remove()
+        const parentColumnId = localColumnsDataArray.findIndex(
+            column => column.id === parentId
+        )
+
+        const index = localColumnsDataArray[parentColumnId].cards.findIndex(
+            card => card.id === cardData.id
+        )
+        localColumnsDataArray[parentColumnId].cards.splice(index, 1)
+
+        save()
+    })
+
+    cardContainer.appendChild(deleteCardBtn)
+
+    const moveCardBtnContainer = document.createElement("div")
+    moveCardBtnContainer.classList.add("move-card-btn-container")
+
+    const moveCardLeftBtn = document.createElement("button")
+    moveCardLeftBtn.textContent = "←"
+    moveCardLeftBtn.addEventListener("click", () => {
+        moveCard("left", cardContainer, localColumnsDataArray)
+    })
+    const moveCardRightBtn = document.createElement("button")
+    moveCardRightBtn.textContent = "→"
+    moveCardRightBtn.addEventListener("click", () => {
+        moveCard("right", cardContainer, localColumnsDataArray)
+    })
+    const moveCardUpBtn = document.createElement("button")
+    moveCardUpBtn.textContent = "↑"
+    moveCardUpBtn.addEventListener("click", () => {
+        moveCard("up", cardContainer, localColumnsDataArray)
+    })
+    const moveCardDownBtn = document.createElement("button")
+    moveCardDownBtn.textContent = "↓"
+    moveCardDownBtn.addEventListener("click", () => {
+        moveCard("down", cardContainer, localColumnsDataArray)
+    })
+
+    moveCardBtnContainer.append(
+        moveCardUpBtn,
+        moveCardDownBtn,
+        moveCardLeftBtn,
+        moveCardRightBtn
+    )
+
+    cardContainer.appendChild(moveCardBtnContainer)
+
+    return cardContainer
+}
+
+const moveCard = (direction, cardContainer, localColumnsDataArray) => {
+    const parentEl = cardContainer.closest(".kanban-column")
+    const parentColumn = cardContainer.parentNode
+    const parentColumnId = parseInt(parentColumn.id)
+    const parentIdx = localColumnsDataArray.findIndex(column => {
+        // For some reason only doing column.id === parentColumnId was returning -1?????
+        if (column.id === parentColumnId) {
+            return true
+        }
+        return false
+    })
+
+    let cardOver = cardContainer.previousElementSibling.classList.contains(
+        "card-container"
+    )
+        ? cardContainer.previousElementSibling
+        : null
+    let cardUnder = cardContainer.nextElementSibling.classList.contains(
+        "card-container"
+    )
+        ? cardContainer.nextElementSibling
+        : null
+
+    const newLeftParentEl = parentEl.previousElementSibling
+    const newRightParentEl = parentEl.nextElementSibling
+
+    const parentCardsArray = localColumnsDataArray[parentIdx].cards
+    switch (direction) {
+        case "up":
+            if (cardOver) {
+                const cardIdx = parentCardsArray.findIndex(card => {
+                    if (card.id === parseInt(cardContainer.id)) {
+                        return true
+                    }
+                    return false
+                })
+                ;[parentCardsArray[cardIdx], parentCardsArray[cardIdx - 1]] = [
+                    parentCardsArray[cardIdx - 1],
+                    parentCardsArray[cardIdx],
+                ]
+                parentColumn.insertBefore(cardContainer, cardOver)
+                save()
+            }
+            break
+        case "down":
+            if (cardUnder) {
+                const cardIdx = parentCardsArray.findIndex(card => {
+                    if (card.id === parseInt(cardContainer.id)) {
+                        return true
+                    }
+                    return false
+                })
+                ;[parentCardsArray[cardIdx], parentCardsArray[cardIdx + 1]] = [
+                    parentCardsArray[cardIdx + 1],
+                    parentCardsArray[cardIdx],
+                ]
+                parentColumn.insertBefore(cardUnder, cardContainer)
+                save()
+            }
+            break
+        case "left":
+            if (newLeftParentEl) {
+                cardContainer.remove()
+                newLeftParentEl.insertBefore(
+                    cardContainer,
+                    newLeftParentEl.lastElementChild
+                )
+                const newParentIdx = localColumnsDataArray.findIndex(column => {
+                    if (column.id === parseInt(newLeftParentEl.id)) {
+                        return true
+                    }
+                    return false
+                })
+                const newSiblingCards =
+                    localColumnsDataArray[newParentIdx].cards
+                let max = -1
+                let hasSameIndex = false
+                for (let card of newSiblingCards) {
+                    if (card.id === parseInt(cardContainer.id)) {
+                        hasSameIndex = true
+                    }
+                    if (card.id > max) {
+                        max = card.id
+                    }
+                }
+
+                const cardObjIdx = localColumnsDataArray[
+                    parentIdx
+                ].cards.findIndex(card => {
+                    if (card.id === parseInt(cardContainer.id)) {
+                        return true
+                    }
+                    return false
+                })
+
+                const cardObj = localColumnsDataArray[parentIdx].cards.splice(
+                    cardObjIdx,
+                    1
+                )[0]
+
+                if (hasSameIndex) {
+                    cardContainer.id = max + 1
+                    cardObj.id = max + 1
+                }
+                localColumnsDataArray[newParentIdx].cards.push(cardObj)
+            }
+            break
+        case "right":
+            if (newRightParentEl) {
+                cardContainer.remove()
+                newRightParentEl.insertBefore(
+                    cardContainer,
+                    newRightParentEl.lastElementChild
+                )
+                const newParentIdx = localColumnsDataArray.findIndex(column => {
+                    if (column.id === parseInt(newRightParentEl.id)) {
+                        return true
+                    }
+                    return false
+                })
+                const newSiblingCards =
+                    localColumnsDataArray[newParentIdx].cards
+                let max = -1
+                let hasSameIndex = false
+                for (let card of newSiblingCards) {
+                    if (card.id === parseInt(cardContainer.id)) {
+                        hasSameIndex = true
+                    }
+                    if (card.id > max) {
+                        max = card.id
+                    }
+                }
+
+                const cardObjIdx = localColumnsDataArray[
+                    parentIdx
+                ].cards.findIndex(card => {
+                    if (card.id === parseInt(cardContainer.id)) {
+                        return true
+                    }
+                    return false
+                })
+
+                const cardObj = localColumnsDataArray[parentIdx].cards.splice(
+                    cardObjIdx,
+                    1
+                )[0]
+
+                if (hasSameIndex) {
+                    cardContainer.id = max + 1
+                    cardObj.id = max + 1
+                }
+                localColumnsDataArray[newParentIdx].cards.push(cardObj)
+            }
+            break
+    }
+
+    save()
 }
 
 const makeTextEditable = (textType, textEl, localColumnsDataArray) => {
@@ -144,6 +408,7 @@ window.addEventListener("DOMContentLoaded", () => {
                             columnsContainer,
                             kanbanColumns
                         )
+                        save()
                     })
                     buttonsContainer.appendChild(addColumnBtn)
 
@@ -159,7 +424,6 @@ window.addEventListener("DOMContentLoaded", () => {
                                 columnData: kanbanColumns,
                             }),
                         }).then(res => {
-                            console.log("OIAJOIJGAWE")
                             if (res.ok) {
                                 res.json().then(data => {
                                     console.log(data.msg)
