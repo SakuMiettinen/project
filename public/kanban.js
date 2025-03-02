@@ -41,6 +41,11 @@ const createColumn = (columnData, container, localColumnsDataArray) => {
             },
             localColumnsDataArray[parentColumnId].cards[0]
         )
+        if (!maxIdCard) {
+            maxIdCard = {
+                id: 0,
+            }
+        }
         const newCardObj = {
             id: maxIdCard.id + 1,
             title: "New Card",
@@ -354,12 +359,22 @@ const makeTextEditable = (textType, textEl, localColumnsDataArray) => {
 
 window.addEventListener("DOMContentLoaded", () => {
     const token = localStorage.getItem("jswt")
+    const logoutBtn = document.getElementById("logout")
 
     if (!token) {
+        logoutBtn.style.display = "none"
         const container = document.querySelector(".kanban-container")
         container.textContent =
             "You need to Login or Register to access this restricted resource"
     } else {
+        logoutBtn.addEventListener("click", () => {
+            localStorage.removeItem("jswt")
+            window.location.href = "/"
+        })
+        const loginBtn = document.getElementById("login")
+        loginBtn.style.display = "none"
+        const registerBtn = document.getElementById("register")
+        registerBtn.style.display = "none"
         fetch("http://localhost:3000/get-user-kanban-data", {
             method: "GET",
             headers: {
@@ -387,6 +402,14 @@ window.addEventListener("DOMContentLoaded", () => {
                     const columnsContainer =
                         container.querySelector(".kanban-columns")
 
+                    columnsContainer.addEventListener(
+                        "wheel",
+                        e => {
+                            e.preventDefault()
+                            columnsContainer.scrollLeft += e.deltaY * 0.2
+                        },
+                        { passive: false }
+                    )
                     // Add new column
                     const addColumnBtn = document.createElement("button")
                     addColumnBtn.textContent = "Add new column"

@@ -20,6 +20,12 @@ a {
     color: var(--lightest);
 }
 
+button {
+    border-radius: 10px;
+    padding: 10px 5px;
+    cursor: pointer;
+}
+
 .container {
     display: flex;
     justify-content: space-around;
@@ -35,6 +41,15 @@ a {
     gap: 5px;
 }
 
-.nav-right-container {
-    
+.nav-left-container a:first-child {
+    margin-right: 15px;
 }
+
+.container > a {
+    margin: auto 0;
+}
+
+input {
+    margin: 5px 0;
+}
+  

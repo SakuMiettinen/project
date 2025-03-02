@@ -16,6 +16,7 @@
     border-radius: 5px;
     border: none;
     background-size: contain;
+    padding: 0 !important;
 }
 
 .kanban-container > button {
@@ -32,9 +33,12 @@
 
 .kanban-columns {
     display: flex;
-    justify-content: center;
     flex-direction: row;
     gap: 10px;
+    padding: 10px; 
+
+    /* Make container scrollable */
+    overflow-x: auto; 
 }
 
 .kanban-column {
@@ -48,6 +52,7 @@
 
 .kanban-column > h3 {
     text-align: center;
+    margin-top: 30px;
 }
 
 .delete-card-btn {
@@ -62,6 +67,7 @@
     border-radius: 5px;
     border: none;
     background-size: contain;
+    padding: 0 !important;
 }
 
 .card-container {
@@ -71,6 +77,7 @@
     background: var(--mid-light);
     overflow-wrap: break-word;
     margin-bottom: 20px;
+    padding-right: 35px;
 }
 
 .card-container h4 {
@@ -93,4 +100,5 @@
     text-align: center;
     width: 25px;
     height: 25px;
+    padding: 0 !important;
 }
