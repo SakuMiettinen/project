@@ -8,7 +8,7 @@ The project gets the users kanban data from the database and sets the initial st
 
 Usage:
 For a local copy of the project:
-npm i
+npm i, then:
 npm run dev
 
 IMPORTANT
