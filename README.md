@@ -2,6 +2,11 @@ Link to github repository: https://github.com/SakuMiettinen/project
 
 The project is using a minimal setup so it only uses Node.js on the backend with express.js and MongoDB as the database and no frontend frameworks are used.
 
+Project tested using:
+
+-   MongoDB version 8.0.3
+-   Node.js version 22.13.1
+
 The project gets the users kanban data from the database and sets the initial state of the board based on it and stores it in a local array that is used as temporary storage. (Should not have done this but time constraint caused me to stick with this). User data from the local array is saved to the database every time the user:
 
 -   Adds or removes a column
