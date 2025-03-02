@@ -7,7 +7,7 @@ const app: Express = express()
 
 const PORT = process.env.PORT || 3000
 
-const mongoDB: string = process.env.DB || "mongodb://localhost:27017/testdb"
+const mongoDB: string = process.env.DB || "mongodb://localhost:27017/projectdb"
 mongoose.connect(mongoDB)
 mongoose.Promise = Promise
 const db: Connection = mongoose.connection
